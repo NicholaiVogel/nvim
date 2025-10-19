@@ -1,0 +1,1 @@
+/home/Nicholai/.local/share/neovim/titus-kickstart/init.lua
