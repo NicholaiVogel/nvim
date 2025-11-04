@@ -90,7 +90,7 @@
 - `Ctrl+w _` - Maximize height
 - `Ctrl+w |` - Maximize width
 
-## Your Custom Keybindings
+## Custom Keybindings
 *Based on your config with `<leader>` = Space*
 
 ### File Explorer
@@ -150,4 +150,4 @@
 - System clipboard integration: Just yank normally with `y` - it copies to system clipboard! (You have `clipboard=unnamedplus` set)
 
 ---
-*Last updated: October 2025*
+*Last updated: November 2025*
