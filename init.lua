@@ -1,22 +1,24 @@
--- Load core settings
+-- always load core stuff
 require("core.options")
-
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable",
-        lazypath,
-    })
-end
-vim.opt.rtp:prepend(lazypath)
-
--- Load plugins
-require("lazy").setup("plugins")
-
--- Load core keymaps
 require("core.keymaps")
+
+-- only load plugins when not in VSCode / Cursor
+if not vim.g.vscode then
+  -- Bootstrap lazy.nvim
+  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "https://github.com/folke/lazy.nvim.git",
+      "--branch=stable",
+      lazypath,
+    })
+  end
+  vim.opt.rtp:prepend(lazypath)
+
+  -- Load plugins
+  require("lazy").setup("plugins")
+end
+

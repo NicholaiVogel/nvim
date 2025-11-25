@@ -652,3 +652,15 @@ export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[1;4;31m'
 
 
+
+alias claude="/home/nicholai/.claude/local/claude"
+. "$HOME/.cargo/env"
+
+alias scripts="cd /mnt/work/L-Nextcloud/04_Library/_Tools/Nuke/ && nvim"
+
+alias comfy="cd ~/ComfyUI && source .venv/bin/activate && python main.py"
+
+alias sammie="cd ~/Software/Sammie-Roto-2/ && source venv/bin/activate && ./run_sammie.command"
+export NSXIV_THUMBSIZE=512
+
+export PATH=$PATH:/home/nicholai/.spicetify
