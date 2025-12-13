@@ -6,7 +6,7 @@ return {
         priority = 1000,
         config = function()
             require('kanagawa').setup({
-                compile = true,  -- enable compiling the colorscheme
+                compile = true,   -- enable compiling the colorscheme
                 undercurl = true, -- enable undercurls
                 commentStyle = { italic = true },
                 functionStyle = {},
@@ -34,13 +34,13 @@ return {
     },
 
     -- File explorer
-        {
-            "nvim-tree/nvim-tree.lua",
-            dependencies = { "nvim-tree/nvim-web-devicons" },
-            config = function()
-                require("nvim-tree").setup()
-            end,
-        },
+    {
+        "nvim-tree/nvim-tree.lua",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+            require("nvim-tree").setup()
+        end,
+    },
 
     -- Fuzzy finder
     {
@@ -169,7 +169,7 @@ return {
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
             require("lualine").setup({
-                options = { theme = "catppuccin" },
+                options = { theme = "kanagawa" },
             })
         end,
     },
