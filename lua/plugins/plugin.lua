@@ -1,22 +1,46 @@
 return {
     -- Color scheme
     {
-        "catppuccin/nvim",
-        name = "catppuccin",
+        "rebelot/kanagawa.nvim",
+        name = "kanagawa",
         priority = 1000,
         config = function()
-            vim.cmd.colorscheme "catppuccin-mocha"
+            require('kanagawa').setup({
+                compile = true,  -- enable compiling the colorscheme
+                undercurl = true, -- enable undercurls
+                commentStyle = { italic = true },
+                functionStyle = {},
+                keywordStyle = { italic = true },
+                statementStyle = { bold = true },
+                typeStyle = {},
+                transparent = false,   -- do not set background color
+                dimInactive = false,   -- dim inactive window `:h hl-NormalNC`
+                terminalColors = true, -- define vim.g.terminal_color_{0,17}
+                colors = {             -- add/modify theme and palette colors
+                    palette = {},
+                    theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+                },
+                overrides = function(colors) -- add/modify highlights
+                    return {}
+                end,
+                theme = "wave",    -- Load "wave" theme
+                background = {     -- map the value of 'background' option to a theme
+                    dark = "wave", -- try "dragon" !
+                    light = "lotus"
+                },
+            })
+            vim.cmd("colorscheme kanagawa")
         end,
     },
 
     -- File explorer
-    {
-        "nvim-tree/nvim-tree.lua",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        config = function()
-            require("nvim-tree").setup()
-        end,
-    },
+        {
+            "nvim-tree/nvim-tree.lua",
+            dependencies = { "nvim-tree/nvim-web-devicons" },
+            config = function()
+                require("nvim-tree").setup()
+            end,
+        },
 
     -- Fuzzy finder
     {
@@ -161,13 +185,13 @@ return {
             })
 
             wk.add({
-                { "<leader>e", desc = "Toggle file explorer" },
-                { "<leader>f", group = "Find" },
+                { "<leader>e",  desc = "Toggle file explorer" },
+                { "<leader>f",  group = "Find" },
                 { "<leader>ff", desc = "Find files" },
                 { "<leader>fg", desc = "Live grep" },
                 { "<leader>fb", desc = "Find buffers" },
-                { "<leader>w", desc = "Save" },
-                { "<leader>q", desc = "Quit" },
+                { "<leader>w",  desc = "Save" },
+                { "<leader>q",  desc = "Quit" },
             })
         end,
     },
