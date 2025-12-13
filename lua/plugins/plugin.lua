@@ -2,7 +2,7 @@ return {
     -- Color scheme
     {
         "catppuccin/nvim",
-        name = "catppuccin",
+         name = "catppuccin",
         priority = 1000,
         config = function()
             vim.cmd.colorscheme "catppuccin-mocha"
@@ -37,6 +37,7 @@ return {
                 javascriptreact = { "prettierd", "prettier" },
                 typescript = { "prettierd", "prettier" },
                 typescriptreact = { "prettierd", "prettier" },
+                python = { "prettierd", "prettier" },
                 json = { "prettierd", "prettier" },
                 css = { "prettierd", "prettier" },
                 html = { "prettierd", "prettier" },
@@ -52,7 +53,7 @@ return {
         config = function()
             require("nvim-treesitter.configs").setup({
                 ensure_installed = {
-                    "lua", "vim", "bash", "javascript", "typescript", "tsx", "json", "yaml", "html", "css", "prisma",
+                    "lua", "vim", "bash", "javascript", "python", "typescript", "tsx", "json", "yaml", "html", "css", "prisma",
                     "graphql"
                 },
                 highlight = { enable = true },
@@ -106,7 +107,7 @@ return {
         dependencies = { "williamboman/mason.nvim" },
         config = function()
             require("mason-lspconfig").setup({
-                ensure_installed = { "ts_ls", "eslint", "jsonls", "html", "cssls", "tailwindcss" },
+                ensure_installed = { "ts_ls", "eslint", "jsonls", "pyright", "html", "cssls", "tailwindcss" },
             })
         end,
     },
