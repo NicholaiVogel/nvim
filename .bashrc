@@ -651,4 +651,14 @@ export LESS_TERMCAP_so=$'\e[01;33m'
 export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[1;4;31m'
 
+alias ff='fastfetch'
+alias nuke='sudo bash /home/nicholai/Documents/obsidian-vault/02_Areas/Nuke-monitoring/scripts/nuke_isolated.sh'
+alias note='cd /mnt/work/dev/personal-projects/nicholai-work-2026 && pnpm notepad'
+alias comfy='cd /home/nicholai/ComfyUI && source .venv/bin/activate && python main.py'
+alias scripts='nvim .nuke/'
 
+# opencode
+export PATH=/home/nicholai/.opencode/bin:$PATH
+
+# OpenRouter API Key for oh-my-opencode
+export OPENROUTER_API_KEY="REDACTED_OPENROUTER_KEY"
