@@ -1,11 +1,35 @@
 return {
     -- Color scheme
     {
-        "catppuccin/nvim",
-        name = "catppuccin",
+        "rebelot/kanagawa.nvim",
+        name = "kanagawa",
         priority = 1000,
         config = function()
-            vim.cmd.colorscheme "catppuccin-mocha"
+            require('kanagawa').setup({
+                compile = true,   -- enable compiling the colorscheme
+                undercurl = true, -- enable undercurls
+                commentStyle = { italic = true },
+                functionStyle = {},
+                keywordStyle = { italic = true },
+                statementStyle = { bold = true },
+                typeStyle = {},
+                transparent = false,   -- do not set background color
+                dimInactive = false,   -- dim inactive window `:h hl-NormalNC`
+                terminalColors = true, -- define vim.g.terminal_color_{0,17}
+                colors = {             -- add/modify theme and palette colors
+                    palette = {},
+                    theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+                },
+                overrides = function(colors) -- add/modify highlights
+                    return {}
+                end,
+                theme = "wave",    -- Load "wave" theme
+                background = {     -- map the value of 'background' option to a theme
+                    dark = "wave", -- try "dragon" !
+                    light = "lotus"
+                },
+            })
+            vim.cmd("colorscheme kanagawa")
         end,
     },
 
@@ -16,6 +40,47 @@ return {
         config = function()
             require("nvim-tree").setup()
         end,
+    },
+
+    -- Git signs
+    {
+        "lewis6991/gitsigns.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        config = function()
+            require("gitsigns").setup({
+                on_attach = function(bufnr)
+                    local gs = package.loaded.gitsigns
+                    local map = function(mode, l, r, opts)
+                        opts = opts or {}
+                        opts.buffer = bufnr
+                        vim.keymap.set(mode, l, r, opts)
+                    end
+                    -- Navigation
+                    map("n", "]c", function() gs.next_hunk() end, { desc = "Next hunk" })
+                    map("n", "[c", function() gs.prev_hunk() end, { desc = "Previous hunk" })
+                    -- Actions
+                    map("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
+                    map("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
+                    map("n", "<leader>gS", gs.stage_buffer, { desc = "Stage buffer" })
+                    map("n", "<leader>gu", gs.undo_stage_hunk, { desc = "Undo stage" })
+                    map("n", "<leader>gp", gs.preview_hunk, { desc = "Preview hunk" })
+                    map("n", "<leader>gb", function() gs.blame_line({ full = true }) end, { desc = "Blame line" })
+                    map("n", "<leader>gd", gs.diffthis, { desc = "Diff this" })
+                end,
+            })
+        end,
+    },
+
+    -- Diff view
+    {
+        "sindrets/diffview.nvim",
+        cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+        keys = {
+            { "<leader>gv", "<cmd>DiffviewOpen<cr>", desc = "Diff view" },
+            { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
+            { "<leader>gx", "<cmd>DiffviewClose<cr>", desc = "Close diff" },
+        },
+        config = true,
     },
 
     -- Fuzzy finder
@@ -145,7 +210,7 @@ return {
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
             require("lualine").setup({
-                options = { theme = "catppuccin" },
+                options = { theme = "kanagawa" },
             })
         end,
     },
@@ -161,13 +226,14 @@ return {
             })
 
             wk.add({
-                { "<leader>e", desc = "Toggle file explorer" },
-                { "<leader>f", group = "Find" },
+                { "<leader>e",  desc = "Toggle file explorer" },
+                { "<leader>f",  group = "Find" },
                 { "<leader>ff", desc = "Find files" },
                 { "<leader>fg", desc = "Live grep" },
                 { "<leader>fb", desc = "Find buffers" },
-                { "<leader>w", desc = "Save" },
-                { "<leader>q", desc = "Quit" },
+                { "<leader>g",  group = "Git" },
+                { "<leader>w",  desc = "Save" },
+                { "<leader>q",  desc = "Quit" },
             })
         end,
     },
