@@ -1,7 +1,7 @@
 # Catppuccin Mocha theme to match nvim
 format = """
-[┌─](bold blue)$directory$git_branch$git_status
-[└─](bold blue)$character"""
+[╭─](bold blue)$directory$git_branch$git_status
+[╰─](bold blue)$character"""
 
 [character]
 success_symbol = "[➜](bold green)"
