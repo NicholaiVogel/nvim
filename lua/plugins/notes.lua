@@ -72,26 +72,26 @@ return {
         ft = { "markdown", "Avante" },
         opts = {
             heading = {
-                enabled = true,
-                icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+                enabled = false,
             },
             code = {
                 enabled = true,
-                style = "full",
+                style = "normal",
                 border = "thin",
             },
             bullet = {
                 enabled = true,
-                icons = { "●", "○", "◆", "◇" },
+                icons = { "•", "◦", "▪", "▫" },
             },
             checkbox = {
                 enabled = true,
-                unchecked = { icon = "󰄱 " },
-                checked = { icon = "󰄵 " },
+                unchecked = { icon = "☐ " },
+                checked = { icon = "☑ " },
             },
             quote = { enabled = true },
             pipe_table = { enabled = true },
             link = { enabled = true },
+            sign = { enabled = false },
         },
     },
 }
