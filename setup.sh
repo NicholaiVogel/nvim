@@ -1,25 +1,36 @@
 #!/bin/bash
- 
+set -e  # exit on error
+
 # This script sets up dotfiles and installs opencode:
 # - Backs up and symlinks .tmux.conf from dotfiles/ to ~/
 # - Backs up and symlinks starship.toml from dotfiles/ to ~/.config/
 # - Installs opencode CLI if not already present
 
 # Check and backup/symlink .tmux.conf
-if [ -f ~/.tmux.conf ] || [ -L ~/.tmux.conf ]; then
-  cp ~/.tmux.conf ~/.tmux.conf.backup
-  ln -sf ~/.config/nvim/dotfiles/.tmux.conf ~/.tmux.conf
-elif [ -f ~/.config/nvim/.tmux.conf ]; then
-  cp ~/.config/nvim/dotfiles/.tmux.conf ~/.tmux.conf
+TMUX_TARGET="$HOME/.config/nvim/dotfiles/.tmux.conf"
+if [ -L ~/.tmux.conf ] && [ "$(readlink ~/.tmux.conf)" = "$TMUX_TARGET" ]; then
+  echo ".tmux.conf already linked correctly"
+elif [ -f ~/.tmux.conf ] || [ -L ~/.tmux.conf ]; then
+  cp ~/.tmux.conf ~/.tmux.conf.backup.$(date +%Y%m%d%H%M%S)
+  ln -sf "$TMUX_TARGET" ~/.tmux.conf
+  echo ".tmux.conf backed up and linked"
+elif [ -f "$TMUX_TARGET" ]; then
+  ln -sf "$TMUX_TARGET" ~/.tmux.conf
+  echo ".tmux.conf linked"
 fi
 
 # Check and backup/symlink starship.toml
-if [ -f ~/.config/starship.toml ] || [ -L ~/.config/starship.toml ]; then
-  cp ~/.config/starship.toml ~/.config/starship.toml.backup
-  ln -sf ~/.config/nvim/dotfiles/starship.toml ~/.config/starship.toml
-elif [ -f ~/.config/nvim/starship.toml ]; then
+STARSHIP_TARGET="$HOME/.config/nvim/dotfiles/starship.toml"
+if [ -L ~/.config/starship.toml ] && [ "$(readlink ~/.config/starship.toml)" = "$STARSHIP_TARGET" ]; then
+  echo "starship.toml already linked correctly"
+elif [ -f ~/.config/starship.toml ] || [ -L ~/.config/starship.toml ]; then
+  cp ~/.config/starship.toml ~/.config/starship.toml.backup.$(date +%Y%m%d%H%M%S)
+  ln -sf "$STARSHIP_TARGET" ~/.config/starship.toml
+  echo "starship.toml backed up and linked"
+elif [ -f "$STARSHIP_TARGET" ]; then
   mkdir -p ~/.config
-  cp ~/.config/nvim/dotfiles/starship.toml ~/.config/starship.toml
+  ln -sf "$STARSHIP_TARGET" ~/.config/starship.toml
+  echo "starship.toml linked"
 fi
 
 # Check if opencode is installed, if not, install opencode
@@ -61,29 +72,34 @@ alias cldyo='claude --dangerously-skip-permissions --model opus'
 # IP address lookup
 alias whatismyip="whatsmyip"
 function whatsmyip () {
-    # Internal IP Lookup.
+    # Internal IP Lookup - auto-detect default interface
     if command -v ip &> /dev/null; then
+        local iface=$(ip route | grep default | awk '{print $5}' | head -1)
         echo -n "Internal IP: "
-        ip addr show wlan0 | grep "inet " | awk '{print $2}' | cut -d/ -f1
+        ip addr show "$iface" | grep "inet " | awk '{print $2}' | cut -d/ -f1
     else
         echo -n "Internal IP: "
-        ifconfig wlan0 | grep "inet " | awk '{print $2}'
+        ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print $2}' | head -1
     fi
 
     # External IP Lookup
     echo -n "External IP: "
-    curl -4 ifconfig.me
+    curl -s -4 ifconfig.me
+    echo  # newline after curl output
 }
 
 # Automatically do an ls after each cd
-cd ()
-{
-	if [ -n "$1" ]; then
-		builtin cd "$@" && ls
-	else
-		builtin cd ~ && ls
-	fi
-}
+if [[ -n "$ZSH_VERSION" ]]; then
+    chpwd() { ls }
+else
+    cd() {
+        if [ -n "$1" ]; then
+            builtin cd "$@" && ls
+        else
+            builtin cd ~ && ls
+        fi
+    }
+fi
 
 # Create and go to the directory
 mkdirg() {
@@ -128,8 +144,8 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-# Check the window size after each command
-shopt -s checkwinsize
+# Check the window size after each command (bash only)
+[[ -n "$BASH_VERSION" ]] && shopt -s checkwinsize
 
 # Set the default editor
 export EDITOR=nvim
