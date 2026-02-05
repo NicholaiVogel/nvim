@@ -13,6 +13,8 @@ vim.opt.termguicolors = true
 vim.opt.cursorline = true
 vim.opt.signcolumn = 'yes'
 vim.opt.clipboard = "unnamedplus"
+vim.opt.scrolloff = 8
+vim.opt.sidescrolloff = 8
 
 -- Leader key
 vim.g.mapleader = ' '

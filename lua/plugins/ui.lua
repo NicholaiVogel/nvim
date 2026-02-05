@@ -78,6 +78,7 @@ return {
                 { "<leader>9f", desc = "Fill Function" },
                 { "<leader>9v", desc = "Visual AI" },
                 { "<leader>9s", desc = "Stop requests" },
+                { "<leader>o",  group = "Obsidian" },
             })
         end,
     },
