@@ -1,3 +1,5 @@
+local config = require("core.config")
+
 return {
     -- Syntax highlighting
     {
@@ -5,10 +7,7 @@ return {
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = {
-                    "lua", "vim", "bash", "javascript", "typescript", "tsx", "json", "yaml", "html", "css", "prisma",
-                    "graphql"
-                },
+                ensure_installed = config.get("treesitter.languages"),
                 highlight = { enable = true },
                 indent = { enable = true },
             })

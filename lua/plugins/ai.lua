@@ -1,3 +1,6 @@
+local config = require("core.config")
+local ai = config.ai()
+
 return {
     -- AI agent (99)
     {
@@ -52,10 +55,10 @@ return {
                         local result = handle:read("*a")
                         handle:close()
                         if result:match("^[24]%d%d") then
-                            return "anthropic/claude-sonnet-4-5"
+                            return ai.openCodeModel
                         end
                     end
-                    return "claude-sonnet-4-5"
+                    return ai.model
                 end)(),
 
                 logger = {

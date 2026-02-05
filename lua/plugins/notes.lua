@@ -1,3 +1,5 @@
+local config = require("core.config")
+
 return {
     -- Obsidian integration
     {
@@ -14,7 +16,7 @@ return {
             workspaces = {
                 {
                     name = "vault",
-                    path = "/mnt/work/obsidian-vault/",
+                    path = config.get("paths.obsidianVault"),
                 },
             },
             completion = {

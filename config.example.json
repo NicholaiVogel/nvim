@@ -1,0 +1,23 @@
+{
+    "paths": {
+        "obsidianVault": "~/Documents/obsidian-vault/",
+        "srcDirectory": "~/.local/src/",
+        "scriptsDirectory": "~/scripts/",
+        "wallpaperScript": "~/scripts/pywal/wallpapermenu.sh"
+    },
+    "editor": {
+        "tabSize": 4,
+        "scrollOffset": 8,
+        "theme": "wave"
+    },
+    "ai": {
+        "model": "claude-sonnet-4-5",
+        "openCodeModel": "anthropic/claude-sonnet-4-5"
+    },
+    "lsp": {
+        "servers": ["ts_ls", "eslint", "jsonls", "html", "cssls", "tailwindcss"]
+    },
+    "treesitter": {
+        "languages": ["lua", "vim", "bash", "javascript", "typescript", "tsx", "json", "yaml", "html", "css"]
+    }
+}

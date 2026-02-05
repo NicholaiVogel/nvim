@@ -1,3 +1,5 @@
+local config = require("core.config")
+
 return {
     -- Mason (LSP installer)
     {
@@ -12,7 +14,7 @@ return {
         dependencies = { "williamboman/mason.nvim" },
         config = function()
             require("mason-lspconfig").setup({
-                ensure_installed = { "ts_ls", "eslint", "jsonls", "html", "cssls", "tailwindcss" },
+                ensure_installed = config.get("lsp.servers"),
             })
         end,
     },

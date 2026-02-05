@@ -1,3 +1,7 @@
+local config = require("core.config")
+local editor = config.editor()
+local paths = config.paths()
+
 return {
     -- Kanagawa colorscheme
     {
@@ -24,9 +28,9 @@ return {
                 overrides = function(colors)
                     return {}
                 end,
-                theme = "wave",
+                theme = editor.theme,
                 background = {
-                    dark = "wave",
+                    dark = editor.theme,
                     light = "lotus"
                 },
             })
@@ -93,7 +97,7 @@ return {
                                 if selection.value == "_wallpaper_picker" then
                                     -- launch wallpaper picker, then reload pywal
                                     vim.fn.jobstart(
-                                        { "bash", "-c", "~/scripts/pywal/wallpapermenu.sh && sleep 1" },
+                                        { "bash", "-c", paths.wallpaperScript .. " && sleep 1" },
                                         {
                                             on_exit = function()
                                                 vim.schedule(function()

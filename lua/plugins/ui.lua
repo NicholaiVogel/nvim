@@ -1,3 +1,6 @@
+local config = require("core.config")
+local paths = config.paths()
+
 return {
     -- Status line
     {
@@ -31,8 +34,8 @@ return {
                 dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
                 dashboard.button("f", "󰍉  Find file", ":lua require('fzf-lua').files() <CR>"),
                 dashboard.button("t", "  Browse cwd", ":NvimTreeOpen<CR>"),
-                dashboard.button("r", "  Browse src", ":e ~/.local/src/<CR>"),
-                dashboard.button("s", "󰯂  Browse scripts", ":e ~/scripts/<CR>"),
+                dashboard.button("r", "  Browse src", ":e " .. paths.srcDirectory .. "<CR>"),
+                dashboard.button("s", "󰯂  Browse scripts", ":e " .. paths.scriptsDirectory .. "<CR>"),
                 dashboard.button("c", "  Config", ":e ~/.config/nvim/<CR>"),
                 dashboard.button("m", "  Mappings", ":e ~/.config/nvim/lua/core/keymaps.lua<CR>"),
                 dashboard.button("p", "  Plugins", ":PlugInstall<CR>"),
