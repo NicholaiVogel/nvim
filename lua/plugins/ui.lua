@@ -2,7 +2,10 @@ return {
     -- Status line
     {
         "nvim-lualine/lualine.nvim",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+            "rebelot/kanagawa.nvim",
+        },
         config = function()
             require("lualine").setup({
                 options = { theme = "kanagawa" },

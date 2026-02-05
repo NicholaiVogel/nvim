@@ -3,6 +3,7 @@ return {
     {
         "rebelot/kanagawa.nvim",
         name = "kanagawa",
+        lazy = false,
         priority = 1000,
         config = function()
             require('kanagawa').setup({
@@ -40,6 +41,7 @@ return {
     {
         "AlphaTechnolog/pywal.nvim",
         name = "pywal",
+        lazy = false,
         priority = 1000,
         config = function()
             -- auto-load pywal if colors exist
