@@ -6,31 +6,117 @@ return {
         priority = 1000,
         config = function()
             require('kanagawa').setup({
-                compile = true,   -- enable compiling the colorscheme
-                undercurl = true, -- enable undercurls
+                compile = true,
+                undercurl = true,
                 commentStyle = { italic = true },
                 functionStyle = {},
                 keywordStyle = { italic = true },
                 statementStyle = { bold = true },
                 typeStyle = {},
-                transparent = false,   -- do not set background color
-                dimInactive = false,   -- dim inactive window `:h hl-NormalNC`
-                terminalColors = true, -- define vim.g.terminal_color_{0,17}
-                colors = {             -- add/modify theme and palette colors
+                transparent = false,
+                dimInactive = false,
+                terminalColors = true,
+                colors = {
                     palette = {},
                     theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
                 },
-                overrides = function(colors) -- add/modify highlights
+                overrides = function(colors)
                     return {}
                 end,
-                theme = "wave",    -- Load "wave" theme
-                background = {     -- map the value of 'background' option to a theme
-                    dark = "wave", -- try "dragon" !
+                theme = "wave",
+                background = {
+                    dark = "wave",
                     light = "lotus"
                 },
             })
-            vim.cmd("colorscheme kanagawa")
+            -- only set kanagawa if pywal colors don't exist
+            if vim.fn.filereadable(vim.fn.expand("~/.cache/wal/colors")) == 0 then
+                vim.cmd("colorscheme kanagawa")
+            end
         end,
+    },
+
+    -- Pywal colorscheme (syncs with terminal)
+    {
+        "AlphaTechnolog/pywal.nvim",
+        name = "pywal",
+        priority = 1000,
+        config = function()
+            -- auto-load pywal if colors exist
+            if vim.fn.filereadable(vim.fn.expand("~/.cache/wal/colors")) == 1 then
+                vim.cmd("colorscheme pywal")
+            end
+        end,
+    },
+
+    -- Theme switcher
+    {
+        "nvim-telescope/telescope.nvim",
+        keys = {
+            {
+                "<leader>th",
+                function()
+                    local pickers = require("telescope.pickers")
+                    local finders = require("telescope.finders")
+                    local conf = require("telescope.config").values
+                    local actions = require("telescope.actions")
+                    local action_state = require("telescope.actions.state")
+
+                    local themes = {
+                        { name = "pywal (from wallpaper)", value = "pywal" },
+                        { name = "Pick new wallpaper...", value = "_wallpaper_picker" },
+                        { name = "kanagawa", value = "kanagawa" },
+                        { name = "kanagawa-wave", value = "kanagawa-wave" },
+                        { name = "kanagawa-dragon", value = "kanagawa-dragon" },
+                        { name = "kanagawa-lotus", value = "kanagawa-lotus" },
+                    }
+
+                    pickers.new({}, {
+                        prompt_title = "Theme Switcher",
+                        finder = finders.new_table({
+                            results = themes,
+                            entry_maker = function(entry)
+                                return {
+                                    value = entry.value,
+                                    display = entry.name,
+                                    ordinal = entry.name,
+                                }
+                            end,
+                        }),
+                        sorter = conf.generic_sorter({}),
+                        attach_mappings = function(prompt_bufnr, map)
+                            actions.select_default:replace(function()
+                                actions.close(prompt_bufnr)
+                                local selection = action_state.get_selected_entry()
+                                if selection.value == "_wallpaper_picker" then
+                                    -- launch wallpaper picker, then reload pywal
+                                    vim.fn.jobstart(
+                                        { "bash", "-c", "~/scripts/pywal/wallpapermenu.sh && sleep 1" },
+                                        {
+                                            on_exit = function()
+                                                vim.schedule(function()
+                                                    vim.cmd("colorscheme pywal")
+                                                    require("lualine").setup({ options = { theme = "pywal" } })
+                                                    vim.notify("Pywal theme applied", vim.log.levels.INFO)
+                                                end)
+                                            end,
+                                        }
+                                    )
+                                else
+                                    vim.cmd("colorscheme " .. selection.value)
+                                    -- update lualine theme
+                                    local lualine_theme = selection.value:match("^kanagawa") and "kanagawa" or selection.value
+                                    require("lualine").setup({ options = { theme = lualine_theme } })
+                                    vim.notify("Theme: " .. selection.value, vim.log.levels.INFO)
+                                end
+                            end)
+                            return true
+                        end,
+                    }):find()
+                end,
+                desc = "Theme switcher",
+            },
+        },
     },
 
     -- File explorer
@@ -236,6 +322,95 @@ return {
         end,
     },
 
+    -- Commenting
+    {
+        "numToStr/Comment.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        opts = {},
+    },
+
+    -- Surround text objects
+    {
+        "kylechui/nvim-surround",
+        version = "*",
+        event = "VeryLazy",
+        opts = {},
+    },
+
+    -- Quick file navigation
+    {
+        "ThePrimeagen/harpoon",
+        branch = "harpoon2",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        config = function()
+            local harpoon = require("harpoon")
+            harpoon:setup()
+
+            vim.keymap.set("n", "<leader>ha", function() harpoon:list():add() end, { desc = "Harpoon add" })
+            vim.keymap.set("n", "<leader>hh", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = "Harpoon menu" })
+            vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end, { desc = "Harpoon 1" })
+            vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end, { desc = "Harpoon 2" })
+            vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end, { desc = "Harpoon 3" })
+            vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end, { desc = "Harpoon 4" })
+        end,
+    },
+
+    -- Flash motions
+    {
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        opts = {},
+        keys = {
+            { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+            { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+        },
+    },
+
+    -- Indent guides
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        main = "ibl",
+        event = { "BufReadPre", "BufNewFile" },
+        opts = {
+            indent = { char = "│" },
+            scope = { enabled = true },
+        },
+    },
+
+    -- TODO comments
+    {
+        "folke/todo-comments.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        dependencies = { "nvim-lua/plenary.nvim" },
+        opts = {},
+        keys = {
+            { "<leader>ft", "<cmd>TodoTelescope<cr>", desc = "Find TODOs" },
+        },
+    },
+
+    -- Diagnostics list
+    {
+        "folke/trouble.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        cmd = "Trouble",
+        keys = {
+            { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics" },
+            { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer diagnostics" },
+            { "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Location list" },
+            { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix list" },
+        },
+        opts = {},
+    },
+
+    -- Undo tree
+    {
+        "mbbill/undotree",
+        cmd = "UndotreeToggle",
+        keys = {
+            { "<leader>u", "<cmd>UndotreeToggle<cr>", desc = "Toggle undotree" },
+        },
+    },
+
     -- Which-key
     {
         "folke/which-key.nvim",
@@ -252,9 +427,15 @@ return {
                 { "<leader>ff", desc = "Find files" },
                 { "<leader>fg", desc = "Live grep" },
                 { "<leader>fb", desc = "Find buffers" },
+                { "<leader>ft", desc = "Find TODOs" },
                 { "<leader>g",  group = "Git" },
+                { "<leader>h",  group = "Harpoon" },
+                { "<leader>t",  group = "Theme" },
+                { "<leader>th", desc = "Theme switcher" },
+                { "<leader>x",  group = "Trouble" },
                 { "<leader>w",  desc = "Save" },
                 { "<leader>q",  desc = "Quit" },
+                { "<leader>u",  desc = "Undo tree" },
                 { "<leader>9",  group = "AI (99)" },
                 { "<leader>9f", desc = "Fill Function" },
                 { "<leader>9v", desc = "Visual AI" },

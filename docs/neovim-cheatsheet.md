@@ -117,6 +117,40 @@
 - `Tab` - Next completion item
 - `Shift+Tab` - Previous completion item
 
+### Commenting (Comment.nvim)
+- `gcc` - Toggle comment on line
+- `gc{motion}` - Toggle comment with motion (e.g., `gc3j` comments 3 lines down)
+- `gbc` - Toggle block comment
+- Visual mode: `gc` - Comment selection
+
+### Surround (nvim-surround)
+- `ys{motion}{char}` - Add surround (e.g., `ysiw"` surrounds word with quotes)
+- `ds{char}` - Delete surround (e.g., `ds"` removes quotes)
+- `cs{old}{new}` - Change surround (e.g., `cs"'` changes `"` to `'`)
+- Visual mode: `S{char}` - Surround selection
+
+### Harpoon (quick file switching)
+- `Space+ha` - Add current file to harpoon
+- `Space+hh` - Open harpoon menu
+- `Space+1/2/3/4` - Jump to harpoon file 1-4
+
+### Flash (supercharged motions)
+- `s` - Flash jump (type chars to jump to)
+- `S` - Flash treesitter select
+
+### Diagnostics (Trouble)
+- `Space+xx` - Toggle diagnostics panel
+- `Space+xX` - Buffer diagnostics only
+- `Space+xl` - Location list
+- `Space+xq` - Quickfix list
+
+### Theme Switcher
+- `Space+th` - Open theme picker (pywal, kanagawa variants, or pick new wallpaper)
+
+### Utilities
+- `Space+u` - Toggle undo tree
+- `Space+ft` - Find TODOs in project
+
 ## Useful Tips
 - **Repeat actions**: Number before command (e.g., `5dd` deletes 5 lines)
 - **Combine motions**: `d3w` deletes 3 words, `y2j` yanks 2 lines down
@@ -150,4 +184,4 @@
 - System clipboard integration: Just yank normally with `y` - it copies to system clipboard! (You have `clipboard=unnamedplus` set)
 
 ---
-*Last updated: November 2025*
+*Last updated: February 2026*
