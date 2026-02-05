@@ -301,12 +301,40 @@ return {
             end
 
             _99.setup({
-                provider = Providers.CustomOpenCodeProvider,  
-                model = "anthropic/claude-sonnet-4-5",
-                -- Custom provider adds --attach flag to connect to OpenCode server for tool use
-                -- or for CLAUDE:
-                -- provider = Providers.ClaudeCodeProvider,
-                -- model = "claude-sonnet-4-5",
+                -- Auto-detect provider: OpenCode with server if available, else Claude Code
+                provider = (function()
+                    -- Check if opencode is installed
+                    local opencode_installed = vim.fn.executable("opencode") == 1
+                    if not opencode_installed then
+                        return Providers.ClaudeCodeProvider
+                    end
+                    
+                    -- Check if opencode serve is running on port 4096
+                    local handle = io.popen("curl -s -o /dev/null -w '%{http_code}' http://localhost:4096/health 2>/dev/null || echo '000'")
+                    local result = handle:read("*a")
+                    handle:close()
+                    
+                    -- If server is responding (any 2xx or 404), use CustomOpenCodeProvider
+                    if result:match("^[24]%d%d") then
+                        return Providers.CustomOpenCodeProvider
+                    end
+                    
+                    -- Fallback to Claude Code
+                    return Providers.ClaudeCodeProvider
+                end)(),
+                model = (function()
+                    -- Use appropriate model format based on provider
+                    local opencode_installed = vim.fn.executable("opencode") == 1
+                    if opencode_installed then
+                        local handle = io.popen("curl -s -o /dev/null -w '%{http_code}' http://localhost:4096/health 2>/dev/null || echo '000'")
+                        local result = handle:read("*a")
+                        handle:close()
+                        if result:match("^[24]%d%d") then
+                            return "anthropic/claude-sonnet-4-5"
+                        end
+                    end
+                    return "claude-sonnet-4-5"
+                end)(),
 
                 logger = {
                     level = _99.DEBUG,
