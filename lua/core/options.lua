@@ -15,7 +15,24 @@ vim.opt.expandtab = true
 vim.opt.termguicolors = true
 vim.opt.cursorline = true
 vim.opt.signcolumn = 'yes'
+-- vim.opt.clipboard = "unnamedplus"
 vim.opt.clipboard = "unnamedplus"
+vim.g.termfeatures = vim.g.termfeatures or {}
+vim.g.termfeatures.osc52 = true
+local ok, osc52 = pcall(require, "vim.ui.clipboard.osc52")
+if ok then
+  vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+      ["+"] = osc52.copy("+"),
+      ["*"] = osc52.copy("*"),
+    },
+    paste = {
+      ["+"] = osc52.paste("+"),
+      ["*"] = osc52.paste("*"),
+    },
+  }
+end
 vim.opt.scrolloff = editor.scrollOffset
 vim.opt.sidescrolloff = editor.scrollOffset
 
