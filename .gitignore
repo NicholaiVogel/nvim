@@ -2,3 +2,4 @@ lazy-lock.json
 tmp/
 config.json
 config.json.backup.*
+.claude
