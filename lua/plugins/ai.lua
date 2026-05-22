@@ -1,98 +1,107 @@
 local config = require("core.config")
 local ai = config.ai()
 
+local acpx_model = ai.openCodeModel or ai.model or "zai-coding-plan/glm-5.1"
+
+local function ensure_acpx_opencode_config()
+	local root = vim.fn.stdpath("cache") .. "/99-acpx-opencode"
+	local opencode_dir = root .. "/opencode"
+
+	vim.fn.mkdir(opencode_dir, "p")
+	vim.fn.writefile({
+		vim.json.encode({
+			["$schema"] = "https://opencode.ai/config.json",
+			enabled_providers = { "zai-coding-plan" },
+			model = acpx_model,
+		}),
+	}, opencode_dir .. "/opencode.json")
+
+	return root
+end
+
 return {
-    -- AI agent (99)
-    {
-        "ThePrimeagen/99",
-        config = function()
-            local _99 = require("99")
-            local Providers = require("99.providers")
-            local cwd = vim.uv.cwd()
-            local basename = vim.fs.basename(cwd)
+	-- AI agent (99 via ACPX + OpenCode)
+	{
+		dir = "/mnt/work/dev/99-acpx",
+		name = "99",
+		lazy = false,
+		config = function()
+			local _99 = require("99")
+			local Providers = require("99.providers")
+			local cwd = vim.uv.cwd()
+			local basename = vim.fs.basename(cwd)
+			local opencode_config_home = ensure_acpx_opencode_config()
 
-            -- custom provider with --attach flag for tool use
-            local CustomOpenCodeProvider = setmetatable({}, {
-                __index = Providers.OpenCodeProvider
-            })
+			_99.setup({
+				provider = Providers.ACPXProvider,
+				model = acpx_model,
 
-            function CustomOpenCodeProvider._build_command(_, query, request)
-                return {
-                    "opencode", "run",
-                    "--attach", "http://localhost:4096",
-                    "-m", request.context.model,
-                    query
-                }
-            end
+				acpx = {
+					command = { "npx", "-y", "acpx@0.7.0" },
+					agent = "opencode",
+					model = acpx_model,
+					permissions = "approve-all",
+					timeout = 120,
+					cwd = cwd,
+					env = {
+						XDG_CONFIG_HOME = opencode_config_home,
+					},
+					signet = {
+						bypass = true,
+						hooks = false,
+						memory = false,
+						identity = false,
+					},
+				},
 
-            _99.setup({
-                -- Auto-detect provider: OpenCode with server if available, else Claude Code
-                provider = (function()
-                    -- Check if opencode is installed
-                    local opencode_installed = vim.fn.executable("opencode") == 1
-                    if not opencode_installed then
-                        return Providers.ClaudeCodeProvider
-                    end
+				logger = {
+					level = _99.DEBUG,
+					path = "/tmp/" .. basename .. ".99.debug",
+					print_on_error = true,
+				},
 
-                    -- Check if opencode serve is running on port 4096
-                    local handle = io.popen("curl -s -o /dev/null -w '%{http_code}' http://localhost:4096/health 2>/dev/null || echo '000'")
-                    local result = handle:read("*a")
-                    handle:close()
+				completion = {
+					-- custom_rules = { "~/.config/nvim/rules/" },
+					source = "cmp",
+				},
 
-                    -- If server is responding (any 2xx or 404), use CustomOpenCodeProvider
-                    if result:match("^[24]%d%d") then
-                        return Providers.CustomOpenCodeProvider
-                    end
+				md_files = {
+					"AGENTS.md",
+					"CLAUDE.md",
+				},
+			})
 
-                    -- Fallback to Claude Code
-                    return Providers.ClaudeCodeProvider
-                end)(),
-                model = (function()
-                    -- Use appropriate model format based on provider
-                    local opencode_installed = vim.fn.executable("opencode") == 1
-                    if opencode_installed then
-                        local handle = io.popen("curl -s -o /dev/null -w '%{http_code}' http://localhost:4096/health 2>/dev/null || echo '000'")
-                        local result = handle:read("*a")
-                        handle:close()
-                        if result:match("^[24]%d%d") then
-                            return ai.openCodeModel
-                        end
-                    end
-                    return ai.model
-                end)(),
+			vim.keymap.set("n", "<leader>9s", function()
+				_99.search()
+			end, { desc = "99: Search" })
 
-                logger = {
-                    level = _99.DEBUG,
-                    path = "/tmp/" .. basename .. ".99.debug",
-                    print_on_error = true,
-                },
+			vim.keymap.set("n", "<leader>9f", function()
+				_99.search()
+			end, { desc = "99: Search" })
 
-               completion = {
-                    -- custom_rules = { "~/.config/nvim/rules/" },
-                    source = "cmp",
-                },
+			vim.keymap.set("n", "<leader>9v", function()
+				_99.vibe()
+			end, { desc = "99: Vibe" })
 
-                md_files = {
-                    "AGENT.md",
-                    "CLAUDE.md",
-                },
-            })
+			vim.keymap.set("v", "<leader>9v", function()
+				_99.visual()
+			end, { desc = "99: Visual AI" })
 
-            vim.keymap.set("n", "<leader>9f", function()
-                _99.fill_in_function()
-            end, { desc = "99: Fill function" })
+			vim.keymap.set("v", "<leader>9p", function()
+				_99.visual()
+			end, { desc = "99: Visual AI" })
 
-            vim.keymap.set("v", "<leader>9v", function()
-                _99.visual()
-            end, { desc = "99: Visual AI" })
+			vim.keymap.set("n", "<leader>9o", function()
+				_99.open()
+			end, { desc = "99: Open previous request" })
 
-            vim.keymap.set("v", "<leader>9p", function()
-            _99.visual_prompt()
-            end, { desc = "99: Visual with prompt" })
+			vim.keymap.set("n", "<leader>9l", function()
+				_99.view_logs()
+			end, { desc = "99: View logs" })
 
-            vim.keymap.set("v", "<leader>9s", function()
-                _99.stop_all_requests()
-            end, { desc = "99: Stop requests" })
-        end,
-    },
+			vim.keymap.set("n", "<leader>9x", function()
+				_99.stop_all_requests()
+			end, { desc = "99: Stop requests" })
+		end,
+	},
 }
